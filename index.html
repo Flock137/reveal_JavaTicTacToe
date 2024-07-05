@@ -34,7 +34,7 @@
 					<ul>
 						<li class = "fragment">Lai Duc Minh: report writer</li>
 						<li class = "fragment">Nguyen Quoc Hoang: programmer</li>
-						<li class = "fragment">Dinh Thanh Ha: programmer, slide designer/deployer</li>
+						<li class = "fragment">Dinh Thanh Ha: co-programmer, slide designer</li>
 					</ul>
 
 				</section>
@@ -42,9 +42,7 @@
 				<section>
 					<p class = "left-align">Package imported</p>
 					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="1"> 
-						import java.awt.*;  
-						import java.awt.event.*;
-						import javax.swing.*; 
+						import java.util.Scanner;
 						import java.util.ArrayList;
 						import java.util.List;
 					</code></pre>
@@ -52,40 +50,30 @@
 
 				<section> 
 					<p class = "left-align">Class and Instance Variables</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="7"> 
-						public class TicTacToe3 {
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="6"> 
+						public class TicTacToe {
 							private int[][] board;
 							private final int size;
 							private final int winLength;
 							private int currentPlayer;
-						
-							JFrame frame = new JFrame("Tic-Tac-Toe");
-							JLabel textLabel = new JLabel();
-							JPanel textPanel = new JPanel();
-							JPanel boardPanel = new JPanel();
-							JButton[][] boardButtons;
-							boolean gameOver = false;
-							int turns = 0;
 					</code></pre>
 				</section>
 
 				<section>
 					<p class = "left-align">Constructor</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="21"> 
-						public TicTacToe3 (int size, int winLength) {
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="12"> 
+						public TicTacToe(int size, int winLength) {
 							this.size = size;
 							this.winLength = winLength;
 							this.board = new int[size][size];
-							this.boardButtons = new JButton[size][size];
 							this.currentPlayer = 1;
-							initializeGUI();
 						}
 					</code></pre>
 				</section>
 
 				<section>
 					<p class = "left-align"> Check if the move is valid (within boundary)</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="30">
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="19">
 						private boolean isValidMove(int row, int col) {
 							return row >= 0 && row < size && col >= 0 
 							&& col < size && board[row][col] == 0;
@@ -95,33 +83,31 @@
 
 				<section> 
 					<p class ="left-align"> Move function </p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="35">
-						private void makeMove(int row, int col) { 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="23">
+						private void makeMove(int row, int col) {
 							if (isValidMove(row, col)) {
 								board[row][col] = currentPlayer;
-								boardButtons[row][col].setText(currentPlayer == 1 ? "X" : "O");
-								currentPlayer = 3 - currentPlayer; 
-								turns++;
-								checkWinner();  
-							} 
+								currentPlayer = 3 - currentPlayer;
+							} else {
+								throw new IllegalArgumentException("Invalid move");
+							}
+						}
 					</code></pre>
 				</section>
 
 				<section>
 					<p class = "left-align">Undo Move</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="49">
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="32">
 						private void undoMove(int row, int col) {
 							board[row][col] = 0;
-							boardButtons[row][col].setText("");
 							currentPlayer = 3 - currentPlayer;
-							turns--;
 						}
 					</code></pre>
 				</section>
 
 				<section>
 					<p class = "left-align">Check if the player has won</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="56">
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="37">
 						private boolean isWinner(int player) {
 							for (int i = 0; i < size; i++) {
 								for (int j = 0; j < size; j++) {
@@ -138,8 +124,8 @@
 
 				<section>
 					<section>
-						<p class = "left-align">Check if the line have a certain length (winLength)</p> 
-						<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="68"> 
+						<p>Check if the line have a certain length (winLength)</p> 
+						<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="49"> 
 							private boolean checkLine(int row, int col, int dr, int dc, int player) {
 								for (int i = 0; i < winLength; i++) {
 									int r = row + i * dr;
@@ -168,7 +154,7 @@
 
 				<section>
 					<p class = "left-align"> Check if the board is full</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="79"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="60"> 
 						private boolean isFull() {
 							for (int i = 0; i < size; i++) {
 								for (int j = 0; j < size; j++) {
@@ -184,7 +170,7 @@
 
 				<section>
 					<p class = "left-align">Return list of empty cells on board</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="90">
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="71">
 						private List<int[]> getEmptyCells() {
 							List<int[]> emptyCells = new ArrayList<>();
 							for (int i = 0; i < size; i++) {
@@ -201,7 +187,7 @@
 
 				<section>
 					<p class = "left-align">Implement alpha-beta pruning algorithm for finding best move</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="102"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="84"> 
 						private int[] alphaBeta(int depth, int alpha, int beta, boolean maximizingPlayer) {
 							if (depth == 0 || isWinner(1) || isWinner(2) || isFull()) {
 								return new int[]{evaluate(), -1, -1};
@@ -245,7 +231,7 @@
 
 				<section>
 					<p class = "left-align">Use alpha-beta algorithm</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="141"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="124"> 
 						public int[] getBestMove(int depth) {
 							int[] result = alphaBeta(depth, Integer.MIN_VALUE, 
 											Integer.MAX_VALUE, currentPlayer == 1);
@@ -254,9 +240,25 @@
 					</code></pre>
 				</section>
 
+
+				<section>
+					<p class = "left-align">Print out the board</p>
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="129"> 
+						public void printBoard() { //tictactoe3 does not need this, it has GUI tiles
+							for (int i = 0; i < size; i++) {
+								for (int j = 0; j < size; j++) {
+									System.out.print(board[i][j] == 0 ? ". " : (board[i][j] == 1 ? "X " : "O "));
+								}
+								System.out.println();
+							}
+							System.out.println();
+						}
+					</code></pre>
+				</section>
+
 				<section>
 					<p class = "left-align">Evaluate score for both player</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="146"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="138"> 
 						private int evaluate() {
 							int score = 0;
 							score += evaluateLines(1);
@@ -268,7 +270,7 @@
 
 				<section>
 					<p class = "left-align">Evaluate all lines (row, column, diagonal) then return total score</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="153"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="145"> 
 						private int evaluateLines(int player) {
 							int score = 0;
 							int opponent = 3 - player;
@@ -293,7 +295,7 @@
 						Evaluates a line based on the number of pieces of the given player and the number of empty cells in the line. 
 						It assigns a higher score to lines closer to forming a winning combination.
 					</p>
-					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="170"> 
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="162"> 
 						private int evaluateLine(int row, int col, int dr, int dc, int player, int opponent) {
 							int score = 0;
 							int ownCount = 0;
@@ -331,113 +333,56 @@
 					</code></pre>
 				</section>
 
-
-
-				<section>
-					<p class = "left-align">Initialize GUI, setting up frames, panels, button and ActionListener</p>
-					<pre><code data-trim data-noescape>
-						private void initializeGUI() {
-							frame.setVisible(true);
-							frame.setSize(800, 800);
-							frame.setLocationRelativeTo(null);
-							frame.setResizable(false);
-							frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-							frame.setLayout(new BorderLayout());
-					
-							textLabel.setBackground(Color.darkGray);
-							textLabel.setForeground(Color.white);
-							textLabel.setFont(new Font("Arial", Font.BOLD, 50));
-							textLabel.setHorizontalAlignment(JLabel.CENTER);
-							textLabel.setText("Tic-Tac-Toe");
-							textLabel.setOpaque(true);
-					
-							textPanel.setLayout(new BorderLayout());
-							textPanel.add(textLabel);
-							frame.add(textPanel, BorderLayout.NORTH);
-					
-							boardPanel.setLayout(new GridLayout(size, size));
-							boardPanel.setBackground(Color.darkGray);
-							frame.add(boardPanel);
-					
-							for (int r = 0; r < size; r++) {
-								for (int c = 0; c < size; c++) {
-									JButton tile = new JButton();
-									boardButtons[r][c] = tile;
-									boardPanel.add(tile);
-					
-									tile.setBackground(Color.darkGray);
-									tile.setForeground(Color.white);
-									tile.setFont(new Font("Arial", Font.BOLD, 50));
-									tile.setFocusable(false);
-									tile.setText("");
-					
-									tile.addActionListener(new ActionListener() {
-										public void actionPerformed(ActionEvent e) {
-											if (gameOver) return;
-											JButton tile = (JButton) e.getSource();
-											int row = -1, col = -1;
-											outer:
-											for (int i = 0; i < size; i++) {
-												for (int j = 0; j < size; j++) {
-													if (boardButtons[i][j] == tile) {
-														row = i;
-														col = j;
-														break outer;
-													}
-												}
-											}
-											if (isValidMove(row, col)) {
-												makeMove(row, col);
-												checkWinner();
-												if (!gameOver) {
-													currentPlayer = 3 - currentPlayer;
-													textLabel.setText((currentPlayer == 1 ? "X" : "O") + "'s turn.");
-													if (currentPlayer == 2) {
-														int[] aiMove = getBestMove(5);
-														makeMove(aiMove[0], aiMove[1]);
-														checkWinner();
-														currentPlayer = 3 - currentPlayer;
-														textLabel.setText((currentPlayer == 1 ? "X" : "O") + "'s turn.");
-													}
-												}
-											}
-										}
-									});
-								}
-							}
-						}
-					
-					</code></pre>
-				</section>
-				
-
-				<section>
-					<p class = "left-align">Return either the players as winner or a tie</p>
-					<pre><code data-trim data-noescape>
-						private void checkWinner() {
-							if (isWinner(1)) {
-								textLabel.setText("X wins!");
-								gameOver = true;
-							} else if (isWinner(2)) {
-								textLabel.setText("O wins!");
-								gameOver = true;
-							} else if (isFull()) {
-								textLabel.setText("It's a draw!");
-								gameOver = true;
-							}
-						}
-					</code></pre>
-				</section>
-
 				<section>
 					<p class = "left-align">main function</p>
-					<pre><code data-trim data-noescape>
+					<pre><code data-trim data-noescape data-line-numbers data-ln-start-from="200">
 						public static void main(String[] args) {
-							SwingUtilities.invokeLater(new Runnable() {
-								public void run() {
-									new TicTacToe3 (10, 5);  // size:10, winLength:5
+							Scanner scanner = new Scanner(System.in);
+							TicTacToe game = new TicTacToe(8, 5);
+					
+							System.out.print("Enter AI difficulty (1-10): ");
+							int difficulty = scanner.nextInt();
+							System.out.print("Do you want to go first? (y/n): ");
+							boolean playerFirst = scanner.next().toLowerCase().equals("y");
+					
+							int currentPlayer = playerFirst ? 1 : 2;
+					
+							while (true) {
+								game.printBoard();
+					
+								if (game.isWinner(1)) {
+									System.out.println("X wins!");
+									break;
+								} else if (game.isWinner(2)) {
+									System.out.println("O wins!");
+									break;
+								} else if (game.isFull()) {
+									System.out.println("It's a draw!");
+									break;
 								}
-							});
+					
+								if (currentPlayer == 1) {
+									while (true) {
+										try {
+											System.out.print("Enter your move (row column): ");
+											int row = scanner.nextInt();
+											int col = scanner.nextInt();
+											game.makeMove(row, col);
+											break;
+										} catch (IllegalArgumentException e) {
+											System.out.println("Invalid move. Try again.");
+										}
+									}
+								} else {
+									int[] aiMove = game.getBestMove(difficulty);
+									System.out.println("AI moves: " + aiMove[0] + " " + aiMove[1]);
+									game.makeMove(aiMove[0], aiMove[1]);
+								}
+					
+								currentPlayer = 3 - currentPlayer;
+							}
+					
+							scanner.close();
 						}
 					}
 					</code></pre>
